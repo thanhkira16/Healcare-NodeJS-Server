@@ -35,6 +35,22 @@
         #roleId {
             font-weight: bold;
         }
+
+        .btn {
+            background-color: #4CAF50;
+            color: #ccc;
+            border: none;
+            display: inline-block;
+            width: 50px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+        }
+
+        .btn-primary {
+            background-color: #ccc;
+            color: #4CAF50;
+        }
     </style>
 </head>
 
@@ -43,21 +59,17 @@
     <table>
         <tr>
             <th>Email</th>
-            <th>Password</th>
             <th>First Name</th>
             <th>Last Name</th>
             <th>Address</th>
             <th>Phone Number</th>
             <th>Gender</th>
-            <th>Role ID</th>
+            <th>Action</th>
         </tr>
         <% dataTable.forEach(function(user) { %>
             <tr>
                 <td>
                     <%= user.email %>
-                </td>
-                <td>
-                    <%= user.password %>
                 </td>
                 <td>
                     <%= user.firstName %>
@@ -69,13 +81,14 @@
                     <%= user.address %>
                 </td>
                 <td>
-                    <%= user.phoneNumber %>
+                    <%= user.phonenumber %>
                 </td>
                 <td>
                     <%= user.gender %>
                 </td>
                 <td>
-                    <%= user.roleId %>
+                    <a href="/edit-crud?id=<%= user.id %>" class="btn btn-primary">Edit</a>
+                    <a href="" class="btn">Delete</a>
                 </td>
             </tr>
             <% }); %>

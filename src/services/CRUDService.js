@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+import { raw } from 'body-parser';
 import db from '../models/index';
 
 const saltRounds = 10;
@@ -43,8 +44,46 @@ let getAllUsers = () => {
        }
     })
 }
+let getUserInforById = (userId) => {
+    return new Promise(async(resolve, reject) => {
+        try{
+            console.log(userId);
+            let user = await db.User.findOne(
+                { 
+                  where: { id: userId }, 
+                  raw: true, 
+                });
+            resolve(user);
+
+        }catch (error) {
+            reject({});
+        }
+
+    });
+
+}
+
+let updateUserData = (data) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let userId = data.id;
+        let {...updatedData } = data;
+        await db.User.update(updatedData, { where: { id: userId } });
+
+        let allUsers = await db.User.findAll({raw: true});
+        console.log('User data updated successfully');
+        resolve(allUsers); 
+      } catch (error) {
+        reject(error); 
+      }
+    });
+  };
+  
+  
 
 module.exports = {
     createNewUser, 
     getAllUsers,
+    getUserInforById,
+    updateUserData
 };
