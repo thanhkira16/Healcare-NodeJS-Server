@@ -1,5 +1,4 @@
 const bcrypt = require("bcrypt");
-import { raw } from "body-parser";
 import db from "../models/index";
 
 const saltRounds = 10;

@@ -64,7 +64,6 @@ let deleteCRUD = async (req, res) => {
     return res.render("displayCRUD.ejs", {
       dataTable: allUsers,
     });
-    return res.send("User deleted");
   } else {
     return res.send("Error: Missing user ID");
   }
