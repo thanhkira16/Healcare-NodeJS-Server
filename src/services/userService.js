@@ -171,6 +171,7 @@ let hashPassword = async (password) => {
 };
 
 let deleteUser = (userId) => {
+  console.log(userId);
   return new Promise(async (resolve, reject) => {
     try {
       let user = await db.User.findOne({
@@ -191,7 +192,7 @@ let deleteUser = (userId) => {
 
       resolve({
         errCode: 0,
-        message: "User deleted successfully",
+        errMsg: "User deleted successfully",
       });
     } catch (error) {
       reject(error);
