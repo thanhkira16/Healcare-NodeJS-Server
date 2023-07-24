@@ -59,6 +59,7 @@ let putCRUD = async (req, res) => {
 
 let deleteCRUD = async (req, res) => {
   let userID = req.query.id;
+  console.log(userID);
   if (userID) {
     let allUsers = await CRUDCervice.deleteUserById(userID);
     return res.render("displayCRUD.ejs", {
