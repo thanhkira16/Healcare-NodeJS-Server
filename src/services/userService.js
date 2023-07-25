@@ -19,7 +19,7 @@ let handleUserLogin = (email, password) => {
         if (user) {
           let check = await bcrypt.compareSync(password, user.password);
           if (check) {
-            console.log(check);
+            // console.log(check);
             userData.errCode = 0;
             userData.errMsg = "Login successfully";
             delete user.password;
@@ -75,7 +75,7 @@ let getAllUsers = (userId) => {
             exclude: ["password"],
           },
         });
-        console.log(users);
+        // console.log(users);
       } else {
         // If userId is specified, retrieve the user with that specific id
         const user = await db.User.findOne({
@@ -171,7 +171,7 @@ let hashPassword = async (password) => {
 };
 
 let deleteUser = (userId) => {
-  console.log(userId);
+  // console.log(userId);
   return new Promise(async (resolve, reject) => {
     try {
       let user = await db.User.findOne({
@@ -203,12 +203,13 @@ let deleteUser = (userId) => {
 let updateUserData = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
+      console.log("check service" + data);
       let userId = data.id;
-      console.log(userId);
       if (!userId) {
+        console.log(data);
         resolve({
           errCode: 2,
-          errMsg: "Incomplete data. Please provide all required fields.",
+          errMsg: "User ID not found",
         });
         return;
       }
@@ -219,7 +220,11 @@ let updateUserData = (data) => {
       console.log(user);
 
       if (user) {
+        console.log(data.password);
+        const hashedPassword = await hashPassword(data.password);
+        data.password = hashedPassword;
         let { ...updatedData } = data;
+
         await db.User.update(updatedData, { where: { id: userId } });
         resolve({
           errCode: 0,
@@ -232,7 +237,7 @@ let updateUserData = (data) => {
         });
       }
     } catch (error) {
-      reject(error);
+      reject("reject from update user" + error);
     }
   });
 };
