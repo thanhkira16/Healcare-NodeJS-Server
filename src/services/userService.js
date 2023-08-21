@@ -9,7 +9,7 @@ let handleUserLogin = (email, password) => {
       let userData = {};
       if (isExist) {
         let user = await db.User.findOne({
-          attributes: ["email", "roleId", "password"],
+          attributes: ["email", "roleId", "password", "firstName", "lastName"],
           where: {
             email: email,
           },
@@ -102,30 +102,6 @@ let getAllUsers = (userId) => {
 const createNewUser = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      // Validate the data
-      if (
-        !data.email ||
-        !data.password ||
-        !data.firstName ||
-        !data.lastName ||
-        !data.roleId
-      ) {
-        resolve({
-          errCode: 1,
-          errMsg: "Incomplete data. Please provide all required fields.",
-        });
-        return;
-      }
-
-      // Validate email format (this is a simple email regex, a more comprehensive one can be used)
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(data.email)) {
-        resolve({
-          errCode: 2,
-          errMsg: "Invalid email format.",
-        });
-        return;
-      }
       // Check if the email already exists in the database
       const existingUser = await checkUserEmail(data.email);
       if (existingUser === true) {
@@ -141,12 +117,13 @@ const createNewUser = (data) => {
       await db.User.create({
         email: data.email,
         password: hashedPassword,
-        firstName: data.firstName,
-        lastName: data.lastName,
+        firstName: data.firstname,
+        lastName: data.lastname,
         address: data.address,
         phonenumber: data.phonenumber,
-        gender: data.gender === "1" ? true : false,
+        gender: data.gender,
         roleId: data.roleId,
+        positionId: data.roleId,
       });
 
       // Return success response after user creation
@@ -200,44 +177,70 @@ let deleteUser = (userId) => {
   });
 };
 
-let updateUserData = (data) => {
+const updateUserData = async (data) => {
+  try {
+    const { id, email, roleId, positionId, gender } = data;
+    if (!id || !email || !gender || !roleId || !positionId) {
+      return {
+        errCode: 2,
+        errMsg: "Required fields missing",
+      };
+    }
+    console.log(data);
+    const user = await db.User.findOne({
+      where: { id },
+      raw: false,
+    });
+
+    if (user) {
+      const updatedData = {
+        email: data.email,
+        firstName: data.firstname,
+        lastName: data.lastname,
+        address: data.address,
+        phonenumber: data.phonenumber,
+        gender: data.gender,
+        roleId: data.roleId,
+        positionId: data.positionId,
+      };
+      await db.User.update(updatedData, { where: { id } });
+
+      return {
+        errCode: 0,
+        errMsg: "User updated successfully",
+      };
+    } else {
+      return {
+        errCode: 1,
+        errMsg: "User not found",
+      };
+    }
+  } catch (error) {
+    throw new Error("Error from update user: " + error);
+  }
+};
+
+let getAllCodeService = (typeInput) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log("check service" + data);
-      let userId = data.id;
-      if (!userId) {
-        console.log(data);
-        resolve({
-          errCode: 2,
-          errMsg: "User ID not found",
-        });
+      if (!typeInput) {
+        let res = {
+          errCode: 1,
+          errMsg: "Missing or invalid 'typeInput'",
+        };
+        resolve(res);
         return;
       }
-      let user = await db.User.findOne({
-        where: { id: userId },
-        raw: false,
+
+      let res = {};
+      let allcode = await db.Allcode.findAll({
+        where: { type: typeInput },
       });
-      console.log(user);
-
-      if (user) {
-        console.log(data.password);
-        const hashedPassword = await hashPassword(data.password);
-        data.password = hashedPassword;
-        let { ...updatedData } = data;
-
-        await db.User.update(updatedData, { where: { id: userId } });
-        resolve({
-          errCode: 0,
-          errMsg: "User updated successfully",
-        });
-      } else {
-        resolve({
-          errCode: 1,
-          errMsg: "User not found",
-        });
-      }
+      res.errCode = 0;
+      res.data = allcode;
+      resolve(res);
     } catch (error) {
-      reject("reject from update user" + error);
+      reject(error);
     }
   });
 };
@@ -248,4 +251,5 @@ module.exports = {
   createNewUser,
   deleteUser,
   updateUserData,
+  getAllCodeService,
 };
