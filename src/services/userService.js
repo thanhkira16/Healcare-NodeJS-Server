@@ -120,6 +120,7 @@ const createNewUser = (data) => {
         firstName: data.firstname,
         lastName: data.lastname,
         address: data.address,
+        image: data.image,
         phonenumber: data.phonenumber,
         gender: data.gender,
         roleId: data.roleId,
