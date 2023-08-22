@@ -1,4 +1,3 @@
-import db from "../models/index";
 import userService from "../services/userService";
 
 let handleLogin = async (req, res) => {
