@@ -187,7 +187,6 @@ const updateUserData = async (data) => {
         errMsg: "Required fields missing",
       };
     }
-    console.log(data);
     const user = await db.User.findOne({
       where: { id },
       raw: false,
@@ -200,10 +199,15 @@ const updateUserData = async (data) => {
         lastName: data.lastname,
         address: data.address,
         phonenumber: data.phonenumber,
+        image: data.image,
         gender: data.gender,
         roleId: data.roleId,
         positionId: data.positionId,
       };
+      if (data.image) {
+        updatedData.image = data.image;
+      }
+      console.log("update image", updatedData.image);
       await db.User.update(updatedData, { where: { id } });
 
       return {
