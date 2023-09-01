@@ -55,9 +55,7 @@ let handleDeleteUser = async (req, res) => {
 
 let handleEditUser = async (req, res) => {
   try {
-    let data = req.body;
-
-    let message = await userService.updateUserData(data);
+    let message = await userService.updateUserData(req.body);
     return res.status(200).json({ ...message });
   } catch (error) {
     console.error("An error occurred:", error);

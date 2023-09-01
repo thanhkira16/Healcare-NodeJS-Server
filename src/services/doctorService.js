@@ -1,5 +1,7 @@
 import db from "../models/index";
-
+require("dotenv").config();
+import _ from "lodash";
+const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
 const getTopDoctorHomeService = async (numOfdoctors) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -56,6 +58,7 @@ let getAllDoctors = () => {
 };
 
 let saveInfoDoctor = (inputData) => {
+  // console.log("input data: " , inputData);
   return new Promise(async (resolve, reject) => {
     try {
       if (
@@ -68,12 +71,32 @@ let saveInfoDoctor = (inputData) => {
           errMsg: "Missing content",
         });
       } else {
-        await db.Markdown.create({
-          contentHTML: inputData.contentHTML,
-          contentMarkdown: inputData.contentMarkdown,
-          description: inputData.description,
-          doctorId: inputData.doctorId,
-        });
+        if (inputData.action === "CREATE") {
+          await db.Markdown.create({
+            contentHTML: inputData.contentHTML,
+            contentMarkdown: inputData.contentMarkdown,
+            description: inputData.description,
+            doctorId: inputData.doctorId,
+          });
+        } else if (inputData.action === "EDIT") {
+          const doctorMarkdown = await db.Markdown.findOne({
+            where: { doctorId: inputData.doctorId },
+            raw: false,
+          });
+          let markdownID = doctorMarkdown.id;
+          if (doctorMarkdown) {
+            const updatedData = {
+              contentHTML: inputData.contentHTML,
+              contentMarkdown: inputData.contentMarkdown,
+              description: inputData.description,
+            };
+            // console.log("update markdown", updatedData);
+            // console.log("markdown", markdownID);
+            await db.Markdown.update(updatedData, {
+              where: { id: markdownID },
+            });
+          }
+        }
         resolve({
           errCode: 0,
           errMsg: "Save information seccessfully",
@@ -88,7 +111,6 @@ let saveInfoDoctor = (inputData) => {
 let getDetailDoctorByIdService = (inputId) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log("service", inputId);
       if (!inputId) {
         resolve({
           errCode: 1,
@@ -109,11 +131,16 @@ let getDetailDoctorByIdService = (inputId) => {
             },
           ],
           attributes: {
-            exclude: ["password", "image"],
+            exclude: ["password"],
           },
-          raw: true,
+          raw: false,
           nest: true,
         });
+
+        if (dataDb && dataDb.image) {
+          dataDb.image = Buffer.from(dataDb.image, "base64").toString("binary");
+        }
+
         resolve({
           errCode: 0,
           data: dataDb,
@@ -125,9 +152,92 @@ let getDetailDoctorByIdService = (inputId) => {
   });
 };
 
+const bulkCreateScheduleService = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!data.arraySchedule || !data.doctorId || !data.formatedDate) {
+        resolve({
+          errCode: 1,
+          errMsg: "Missing array schedule",
+        });
+      } else {
+        let schedule = data.arraySchedule;
+        if (schedule && schedule.length > 0) {
+          schedule = schedule.map((item) => {
+            item.maxNumber = MAX_NUMBER_SCHEDULE;
+            return item;
+          });
+        }
+        //get all existing schedules
+        let existing = await db.Schedule.findAll({
+          where: { doctorId: data.doctorId, date: data.formatedDate },
+          attributes: ["timeType", "date", "doctorId", "maxNumber"],
+          raw: true,
+        });
+
+        //compare different
+        let toCreate = _.differenceWith(schedule, existing, (a, b) => {
+          return a.timeType === b.timeType && +a.date === +b.date;
+        });
+
+        // console.log("to create", toCreate);
+
+        if (toCreate && toCreate.length > 0) {
+          await db.Schedule.bulkCreate(toCreate);
+        }
+        resolve({
+          errCode: 0,
+          errMsg: "Save schedule successfully",
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+let getScheduleDoctorByDateService = (doctorId, date) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!doctorId || !date) {
+        resolve({
+          errCode: 1,
+          errMsg: "Missing required parameters",
+        });
+      } else {
+        let dataSchedule = await db.Schedule.findAll({
+          where: {
+            doctorId: doctorId,
+            date: date,
+          },
+          include: [
+            {
+              model: db.Allcode,
+              as: "timeTypeData",
+              attributes: ["valueVi", "valueEn"],
+            },
+          ],
+          raw: false,
+          nest: true,
+        });
+        console.log(dataSchedule);
+        if (!dataSchedule) dataSchedule = [];
+        resolve({
+          errCode: 0,
+          data: dataSchedule,
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   getTopDoctorHomeService,
   getAllDoctors,
   saveInfoDoctor,
   getDetailDoctorByIdService,
+  bulkCreateScheduleService,
+  getScheduleDoctorByDateService,
 };
