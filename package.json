@@ -25,6 +25,7 @@
     "lodash": "^4.17.21",
     "mysql2": "^2.2.5",
     "react-intl": "^6.4.4",
+    "react-number-format": "^4.6.4",
     "sequelize": "^6.32.1"
   },
   "devDependencies": {

@@ -18,6 +18,7 @@ const getTopDoctorHome = async (req, res) => {
 let getAllDoctors = async (req, res) => {
   try {
     let data = await doctorService.getAllDoctors();
+    console.log(data);
     return res.status(200).json(data);
   } catch (err) {
     console.log("Get all doctor service error: ", err);
@@ -84,6 +85,39 @@ let bulkCreateSchedule = async (req, res) => {
     });
   }
 };
+
+let getExtraInforDoctorByID = async (req, res) => {
+  try {
+    console.log("check req", req.body.doctorId, req.query.doctorId);
+    let data = await doctorService.getExtraInforDoctorByIDService(
+      req.query.doctorId
+    );
+    // console.log(req.body);
+    return res.status(200).json(data);
+  } catch (err) {
+    console.log("getExtraInforDoctorByID error: ", err);
+    return res.status(500).json({
+      errCode: -1,
+      errMessage: "Error getExtraInforDoctorByID: " + err,
+    });
+  }
+};
+let getProfileDoctorByID = async (req, res) => {
+  try {
+    console.log("check req", req.body.doctorId, req.query.doctorId);
+    let data = await doctorService.getProfileDoctorByIDService(
+      req.query.doctorId
+    );
+    // console.log(req.body);
+    return res.status(200).json(data);
+  } catch (err) {
+    console.log("getProfileDoctorByID error: ", err);
+    return res.status(500).json({
+      errCode: -1,
+      errMessage: "Error getProfileDoctorByID: " + err,
+    });
+  }
+};
 module.exports = {
   getTopDoctorHome,
   getAllDoctors,
@@ -91,4 +125,6 @@ module.exports = {
   getDetailDoctorById,
   bulkCreateSchedule,
   getScheduleDoctorByDate,
+  getExtraInforDoctorByID,
+  getProfileDoctorByID,
 };
