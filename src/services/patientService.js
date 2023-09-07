@@ -1,14 +1,32 @@
 import db from "../models/index";
+import emailService from "../services/emailService";
 let postBookAppointmentService = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log("data service: " + data);
-      if (!data.email || !data.doctorId || !data.timeType || !data.date) {
+      console.log("data service: ", data);
+      if (
+        !data.email ||
+        !data.doctorId ||
+        !data.time ||
+        !data.date ||
+        !data.fullname ||
+        !data.doctorName ||
+        !data.language
+      ) {
         resolve({
           errCode: 1,
-          errMsg: "Missing required parameter",
+          errMsg: "Missing required parameter from patient serviece",
         });
       } else {
+        await emailService.sendBookingEmail({
+          receiverEmail: data.email,
+          patientName: data.fullname,
+          time: data.time,
+          doctorName: data.doctorName,
+          language: data.language,
+          redirectLink: "https://nodemailer.com/",
+        });
+
         let user = await db.User.findOrCreate({
           where: { email: data.email },
           defaults: {
