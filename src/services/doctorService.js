@@ -56,22 +56,45 @@ let getAllDoctors = () => {
     }
   });
 };
+let validateInput = (inputData) => {
+  const requiredFields = [
+    "doctorId",
+    "selectedPrice",
+    "selectedPayment",
+    "selectedProvince",
+    "nameClinic",
+    "addressClinic",
+    "note",
+    "specialtyId",
+    "clinicId",
+  ];
+  let isValid = true;
+  let emptyEle = "";
+  for (const field of requiredFields) {
+    if (!inputData[field]) {
+      isValid = false; // Return false if any of the required fields is empty or falsy
+      emptyEle = field;
+      break;
+    }
+  }
+
+  return {
+    isValid,
+    emptyEle,
+  }; // Return true if all required fields have values
+};
 
 let saveInfoDoctor = (inputData) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (
-        !inputData.doctorId ||
-        !inputData.selectedPrice ||
-        !inputData.selectedPayment ||
-        !inputData.selectedProvince ||
-        !inputData.nameClinic ||
-        !inputData.addressClinic ||
-        !inputData.note
-      ) {
+      console.log(inputData);
+      let checkInput = validateInput(inputData);
+      console.log("Checking input", checkInput);
+      if (checkInput.isValid === false) {
+        console.log("invalid input");
         resolve({
           errCode: 1,
-          errMsg: "Missing one or more required fields",
+          errMsg: ` Missing one or more required fields ${checkInput.emptyEle}`,
         });
       } else {
         //upsert markdown
@@ -119,6 +142,8 @@ let saveInfoDoctor = (inputData) => {
               nameClinic: inputData.nameClinic,
               addressClinic: inputData.addressClinic,
               note: inputData.note,
+              specialtyId: inputData.specialtyId,
+              clinicId: inputData.clinicId,
             },
             {
               where: {
@@ -131,11 +156,13 @@ let saveInfoDoctor = (inputData) => {
           await db.Doctor_Infor.create({
             doctorId: inputData.doctorId,
             priceId: inputData.selectedPrice,
-            provinceId: inputData.selectedPayment,
-            paymentId: inputData.selectedProvince,
+            provinceId: inputData.selectedProvince,
+            paymentId: inputData.selectedPayment,
             nameClinic: inputData.nameClinic,
             addressClinic: inputData.addressClinic,
             note: inputData.note,
+            specialtyId: inputData.specialtyId,
+            clinicId: inputData.clinicId,
           });
         }
         resolve({

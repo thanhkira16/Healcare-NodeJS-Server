@@ -28,9 +28,10 @@ let sendBookingEmail = async (dataSend) => {
         <ul>
           <li><strong>Tên Bác sĩ:</strong> ${dataSend.doctorName}</li>
           <li><strong>Thời gian hẹn:</strong> ${dataSend.time}</li>
+          <li><strong>Lý do khám:</strong> ${dataSend.reason}</li>
         </ul>
         <p>Để xem chi tiết cuộc hẹn và thực hiện bất kỳ thay đổi nào, vui lòng nhấp vào liên kết sau đây:</p>
-        <p><a href="${dataSend.redirectLink}">${dataSend.redirectLink}</a></p>
+        <p><a href="${dataSend.redirectLink}">Nhấn vào đây</a></p>
         <p>Cảm ơn bạn đã chọn VKU Healthcare.</p>
         <p>Trân trọng,<br>Đội ngũ VKU Healthcare</p>
       `,
@@ -44,9 +45,10 @@ let sendBookingEmail = async (dataSend) => {
         <ul>
           <li><strong>Doctor Name:</strong> ${dataSend.doctorName}</li>
           <li><strong>Appointment Time:</strong> ${dataSend.time}</li>
+          <li><strong>Reason:</strong> ${dataSend.time}</li>
         </ul>
         <p>To view your appointment details and make any changes, please click the following link:</p>
-        <p><a href="${dataSend.redirectLink}">${dataSend.redirectLink}</a></p>
+        <p><a href="${dataSend.redirectLink}">Click here</a></p>
         <p>Thank you for choosing VKU Healthcare.</p>
         <p>Sincerely,<br>VKU Healthcare Team</p>
       `,

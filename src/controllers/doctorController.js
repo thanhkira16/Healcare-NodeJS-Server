@@ -38,7 +38,7 @@ let postInfoDoctor = async (req, res) => {
     console.log("post infor doctor service error: ", err);
     return res.status(500).json({
       errCode: -1,
-      errMessage: "Error getting all doctor controllers",
+      errMessage: "Error postInfoDoctor dctor controllers",
     });
   }
 };

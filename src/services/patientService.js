@@ -19,7 +19,8 @@ let postBookAppointmentService = (data) => {
         !data.date ||
         !data.fullname ||
         !data.doctorName ||
-        !data.language
+        !data.language ||
+        !data.reason
       ) {
         resolve({
           errCode: 1,
@@ -33,6 +34,7 @@ let postBookAppointmentService = (data) => {
           time: data.time,
           doctorName: data.doctorName,
           language: data.language,
+          reason: data.reason,
           redirectLink: buildUrlEmail(data.doctorId, token),
         });
 
