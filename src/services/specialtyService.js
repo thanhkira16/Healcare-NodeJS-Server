@@ -61,39 +61,58 @@ let createSpecialtyService = (data) => {
     }
   });
 };
-let getDetailSpecialtyByIdService = (inputId) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      if (!inputId) {
-        resolve({
-          errCode: 1,
-          errMsg:
-            "Missing required parameter from getDetailSpecialtyByIdService",
-        });
-      }
-
-      let data = await db.Specialty.findOne({
-        where: { id: inputId },
-        raw: false,
-        attributes: ["descriptionHTML", "descriptionMarkdown"],
-      });
-      if (data) {
-        resolve({
-          errCode: 0,
-          errMsg: "Successfully getDetailSpecialtyByIdService",
-          data: data,
-        });
-      } else {
-        resolve({
-          errCode: 0,
-          errMsg: "Successfully getDetailSpecialtyByIdService",
-          data: {},
-        });
-      }
-    } catch (error) {
-      reject(error);
+let getDetailSpecialtyByIdService = async (inputId, location) => {
+  try {
+    if (!inputId || !location) {
+      return {
+        errCode: 1,
+        errMsg: "Missing required parameter from getDetailSpecialtyByIdService",
+      };
     }
-  });
+
+    // Find specialty details
+    let data = await db.Specialty.findOne({
+      where: { id: inputId },
+      raw: false,
+      attributes: ["descriptionHTML", "descriptionMarkdown", "image"],
+    });
+
+    if (!data) {
+      return {
+        errCode: 2,
+        errMsg: "No specialty found for the given input",
+        data: {},
+      };
+    }
+
+    let doctorSpecialty = [];
+
+    // Find doctors by location
+    if (location === "ALL") {
+      doctorSpecialty = await db.Doctor_Infor.findAll({
+        where: { specialtyId: inputId },
+        attributes: ["doctorId", "provinceId"],
+      });
+    } else {
+      doctorSpecialty = await db.Doctor_Infor.findAll({
+        where: { specialtyId: inputId, provinceId: location },
+        attributes: ["doctorId", "provinceId"],
+      });
+    }
+
+    return {
+      errCode: 0,
+      errMsg: "Successfully getDetailSpecialtyByIdService",
+      data: data,
+      listDoctors: doctorSpecialty,
+    };
+  } catch (error) {
+    console.error("Error in getDetailSpecialtyByIdService:", error);
+    return {
+      errCode: 3,
+      errMsg: "An error occurred while processing the request",
+    };
+  }
 };
 
 module.exports = {
