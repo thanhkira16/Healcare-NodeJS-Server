@@ -381,6 +381,76 @@ let getExtraInforDoctorByIDService = (doctorId) => {
   });
 };
 
+let getListPatientsBookedService = (doctorId, date) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (!doctorId || !date) {
+        resolve({
+          errCode: 1,
+          errMsg: "Missing required parameters",
+        });
+      } else {
+        let data = await db.Booking.findAll({
+          where: {
+            statusId: "S2",
+            doctorId,
+            date,
+          },
+          include: [
+            {
+              model: db.User,
+              as: "patientData",
+              attributes: ["email", "firstName", "address", "gender"],
+              include: [
+                {
+                  model: db.Allcode,
+                  as: "genderData",
+                  attributes: ["valueEn", "valueVi"],
+                },
+              ],
+            },
+            {
+              model: db.Allcode, // Include the correct model
+              as: "timeTypeDataPatient", // Use the correct alias name
+              attributes: ["valueEn", "valueVi"],
+            },
+          ],
+          raw: false,
+          nest: true,
+        });
+
+        resolve({
+          errCode: 0,
+          data: data,
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+// let getExtraInforDoctorByIDService = (doctorId) => {
+//   return new Promise(async (resolve, reject) => {
+
+//     try {
+//       if (!doctorId) {
+//         resolve({
+//           errCode: 1,
+//           errMsg: "Missing required parameters",
+//         });
+//       } else {
+//         resolve({
+//           errCode: 0,
+//           data: doctor_infor,
+//         });
+//       }
+//     } catch (e) {
+//       reject(e);
+//     }
+//   });
+// };
+
 let getProfileDoctorByIDService = (inputId) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -458,4 +528,5 @@ module.exports = {
   getScheduleDoctorByDateService,
   getExtraInforDoctorByIDService,
   getProfileDoctorByIDService,
+  getListPatientsBookedService,
 };

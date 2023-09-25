@@ -15,12 +15,17 @@ let postBookAppointmentService = (data) => {
       if (
         !data.email ||
         !data.doctorId ||
-        !data.time ||
+        !data.timeString ||
+        !data.timeType ||
         !data.date ||
+        !data.birthday ||
         !data.fullname ||
         !data.doctorName ||
         !data.language ||
-        !data.reason
+        !data.reason ||
+        !data.address ||
+        !data.reason ||
+        !data.selectedGender
       ) {
         resolve({
           errCode: 1,
@@ -31,7 +36,7 @@ let postBookAppointmentService = (data) => {
         await emailService.sendBookingEmail({
           receiverEmail: data.email,
           patientName: data.fullname,
-          time: data.time,
+          time: data.timeString,
           doctorName: data.doctorName,
           language: data.language,
           reason: data.reason,
@@ -43,6 +48,9 @@ let postBookAppointmentService = (data) => {
           defaults: {
             email: data.email,
             roleId: "R3",
+            gender: data.selectedGender,
+            address: data.address,
+            firstName: data.fullname,
           },
         });
         if (user && user[0]) {
