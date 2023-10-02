@@ -66,6 +66,69 @@ let sendBookingEmail = async (dataSend) => {
   });
 };
 
+const sendAttachment = (dataSend) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const transporter = nodemailer.createTransport({
+        service: "Gmail",
+        auth: {
+          user: process.env.EMAIL_APP,
+          pass: process.env.EMAIL_APP_PASSWORD,
+        },
+      });
+
+      const emailContent = {
+        vi: {
+          subject: "Đặt lịch thành công VKU Healcare",
+          text: `Chào bạn,${dataSend.patientName}`,
+          html: `
+          <p>Chào bạn, ${dataSend.patientName}</p>
+            <p>Bạn nhận được email này vì đã đặt lịch thành công trên VKU Healcare</p>
+            <p>Thông tin hóa đơn/đơn thuốc được gửi trong file đính kèm</p>
+            <p>Cảm ơn bạn đã chọn VKU Healthcare.</p>
+            <p>Trân trọng,<br>Đội ngũ VKU Healthcare</p>
+          `,
+        },
+        en: {
+          subject: "Appointment Confirmation at VKU Healcare",
+          text: `Dear, ${dataSend.patientName}`,
+          html: `
+          <p>Dear ${dataSend.patientName}</p>
+            <p>You are receiving this email because you have successfully booked an appointment on VKU Healcare</p>
+            <p>The invoice/prescription information is sent in the attached file.</p>
+            <p>Thank you for choosing VKU Healthcare.</p>
+            <p>Best regards,<br>The VKU Healthcare Team</p>
+          `,
+        },
+      };
+
+      const emailLanguage = emailContent[dataSend.language || "en"];
+      const info = await transporter.sendMail({
+        from: '"VKU Healcare 👻" <thanhtruong16092004@gmail.com>',
+        to: dataSend.email,
+        subject: emailLanguage.subject,
+        text: emailLanguage.text,
+        html: emailLanguage.html,
+        attachments: [
+          {
+            filename: `vku-healcare-${
+              dataSend.patientName
+            }-${new Date().getTime()}.png`,
+            content: dataSend.imgBase64.split("base64")[1],
+            encoding: "base64",
+          },
+        ],
+      });
+
+      resolve("Email sent successfully");
+    } catch (error) {
+      console.error("Error sending email:", error);
+      reject("Error sending email");
+    }
+  });
+};
+
 module.exports = {
   sendBookingEmail,
+  sendAttachment,
 };

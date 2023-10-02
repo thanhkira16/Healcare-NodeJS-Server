@@ -134,6 +134,19 @@ let getListPatientsBooked = async (req, res) => {
     });
   }
 };
+let sendRemedy = async (req, res) => {
+  try {
+    let data = await doctorService.sendRemedyService(req.body);
+    // console.log(req.body);
+    return res.status(200).json(data);
+  } catch (err) {
+    console.log("sendRemedy error: ", err);
+    return res.status(500).json({
+      errCode: -1,
+      errMessage: "Error sendRemedy: " + err,
+    });
+  }
+};
 module.exports = {
   getTopDoctorHome,
   getAllDoctors,
@@ -144,4 +157,5 @@ module.exports = {
   getExtraInforDoctorByID,
   getProfileDoctorByID,
   getListPatientsBooked,
+  sendRemedy,
 };
