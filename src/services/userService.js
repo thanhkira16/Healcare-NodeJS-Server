@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 let handleUserLogin = (email, password) => {
+  console.log("Login", email, password);
   return new Promise(async (resolve, reject) => {
     try {
       const isExist = await checkUserEmail(email);

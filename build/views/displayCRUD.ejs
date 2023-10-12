@@ -1,0 +1,99 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node JS</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        #email,
+        #password,
+        #firstName,
+        #lastName,
+        #address,
+        #phoneNumber,
+        #gender,
+        #roleId {
+            font-weight: bold;
+        }
+
+        .btn {
+            background-color: #4CAF50;
+            color: #ccc;
+            border: none;
+            display: inline-block;
+            width: 50px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+        }
+
+        .btn-primary {
+            background-color: #ccc;
+            color: #4CAF50;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Get CRUD from views</h1>
+    <table>
+        <tr>
+            <th>Email</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Address</th>
+            <th>Phone Number</th>
+            <th>Gender</th>
+            <th>Action</th>
+        </tr>
+        <% dataTable.forEach(function(user) { %>
+            <tr>
+                <td>
+                    <%= user.email %>
+                </td>
+                <td>
+                    <%= user.firstName %>
+                </td>
+                <td>
+                    <%= user.lastName %>
+                </td>
+                <td>
+                    <%= user.address %>
+                </td>
+                <td>
+                    <%= user.phonenumber %>
+                </td>
+                <td>
+                    <%= user.gender %>
+                </td>
+                <td>
+                    <a href="/edit-crud?id=<%= user.id %>" class="btn btn-primary">Edit</a>
+                    <a href="/delete-crud?id=<%= user.id %>" class="btn">Delete</a>
+                </td>
+            </tr>
+            <% }); %>
+    </table>
+
+</body>
+
+</html>
