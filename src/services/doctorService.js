@@ -3,6 +3,7 @@ import emailService from "../services/emailService";
 require("dotenv").config();
 import _ from "lodash";
 const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
+
 const getTopDoctorHomeService = async (numOfdoctors) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -17,9 +18,9 @@ const getTopDoctorHomeService = async (numOfdoctors) => {
             attributes: ["valueEn", "valueVi"],
           },
           {
-            model: db.Allcode,
-            as: "genderData",
-            attributes: ["valueEn", "valueVi"],
+            model: db.Doctor_Infor,
+            // as: "specialtyID",
+            attributes: ["specialtyId"],
           },
         ],
         where: { roleId: "R2" },
